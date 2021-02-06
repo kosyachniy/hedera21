@@ -88,10 +88,6 @@ body {
 
 @media (max-width: 900px) {
     .event_block {
-        border: 1px solid #fff;
-        border-radius: 10px;
-        padding: 40px;
-        margin: 20px;
-        width: calc(50% - 130px);
+        width: calc(100% - 120px);
     }
 }
