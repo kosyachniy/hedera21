@@ -2,7 +2,12 @@ const { Client, PrivateKey, AccountCreateTransaction, AccountBalanceQuery, Hbar,
 require("dotenv").config();
 
 
+const newAccountId = "0.0.305125"
+
+
 async function main() {
+	// My acc
+
     const myAccountId = process.env.MY_ACCOUNT_ID;
     const myPrivateKey = process.env.MY_PRIVATE_KEY;
 
@@ -11,28 +16,36 @@ async function main() {
         throw new Error("Environment variables myAccountId and myPrivateKey must be present");
     }
 
+	// Make main acc
+
     const client = Client.forTestnet();
 
     client.setOperator(myAccountId, myPrivateKey);
 
-    const newAccountPrivateKey = await PrivateKey.generate();
-    const newAccountPublicKey = newAccountPrivateKey.publicKey;
+	// // New acc
 
-    const newAccountTransactionResponse = await new AccountCreateTransaction()
-        .setKey(newAccountPublicKey)
-        .setInitialBalance(Hbar.fromTinybars(1000))
-        .execute(client);
+    // const newAccountPrivateKey = await PrivateKey.generate();
+    // const newAccountPublicKey = newAccountPrivateKey.publicKey;
 
-    const getReceipt = await newAccountTransactionResponse.getReceipt(client);
-    const newAccountId = getReceipt.accountId;
+    // const newAccountTransactionResponse = await new AccountCreateTransaction()
+    //     .setKey(newAccountPublicKey)
+    //     .setInitialBalance(Hbar.fromTinybars(1000))
+    //     .execute(client);
 
-    console.log("The new account ID is: " +newAccountId);
+    // const getReceipt = await newAccountTransactionResponse.getReceipt(client);
+    // const newAccountId = getReceipt.accountId;
 
-    const accountBalance = await new AccountBalanceQuery()
-        .setAccountId(newAccountId)
-        .execute(client);
+    // console.log("The new account ID is: " +newAccountId);
 
-    console.log("The new account balance is: " +accountBalance.hbars.toTinybars() +" tinybar.");
+	// // Balance check
+
+    // const accountBalance = await new AccountBalanceQuery()
+    //     .setAccountId(newAccountId)
+    //     .execute(client);
+
+    // console.log("The new account balance is: " +accountBalance.hbars.toTinybars() +" tinybar.");
+
+	// Transfer
 
     const transferTransactionResponse = await new TransferTransaction()
         .addHbarTransfer(myAccountId, Hbar.fromTinybars(-1000))
