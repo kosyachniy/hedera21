@@ -1,0 +1,86 @@
+body {
+    padding: 0;
+    margin: 0;
+    font-size: 18px;
+    font-style: normal;
+    color: #fff;
+    background: #222;
+    font-weight: 300;
+    font-family: 'Montserrat', sans-serif;
+}
+
+.title {
+    font-size: 24px;
+    text-align: center;
+    font-weight: 300;
+    margin: 50px 0;
+    letter-spacing: 3px;
+}
+
+.btn {
+    display: table;
+    color: #fff;
+    cursor: pointer;
+    outline: 0px;
+    position: relative;
+    font-family: 'Montserrat', sans-serif;
+    border: 0;
+    background: linear-gradient(135deg, #2d84eb 0%, #2d84eb 0%, #8259ef 100%);
+    border-radius: 25px;
+    padding: 14px 28px;
+    font-size: 18px;
+    text-align: center;
+}
+
+.btn:hover {
+    opacity: 0.8;
+}
+
+.events_list {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    margin: 40px auto;
+    max-width: 1000px;
+}
+
+.event_block {
+    border: 1px solid #fff;
+    border-radius: 10px;
+    padding: 40px;
+    margin: 20px;
+    width: calc(50% - 130px);
+}
+
+.event_title {
+    font-size: 18px;
+    text-align: center;
+    font-weight: 300;
+    margin: 10px 0;
+    letter-spacing: 2px;
+}
+
+.event_subtitle {
+    font-size: 16px;
+    text-align: center;
+    font-weight: 300;
+    margin: 10px 0;
+    letter-spacing: 2px;
+    opacity: 0.8;
+}
+
+.event_bottom {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 30px;
+}
+
+.copyright {
+    font-size: 16px;
+    text-align: center;
+    margin: 40px 0;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+}
