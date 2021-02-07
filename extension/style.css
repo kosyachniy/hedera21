@@ -8,12 +8,6 @@ html {
     background: #222;
 }
 
-#popup_auth,
-#popup_account,
-#popup_phrase {
-    display: none;
-}
-
 #popup_phrase {
     display: flex;
     align-items: center;
@@ -29,6 +23,7 @@ html {
 }
 
 #popup_auth,
+#popup_login,
 #popup_account {
     display: flex;
     align-items: center;
@@ -39,6 +34,13 @@ html {
 
 #popup_phrase_btn {
     display: block;
+}
+
+#popup_auth,
+#popup_account,
+#popup_login,
+#popup_phrase {
+    display: none;
 }
 
 .word_block {
@@ -89,4 +91,39 @@ html {
 
 .popup-btn:hover {
     opacity: 0.8;
+}
+
+input {
+    border: 0;
+    color: #fff;
+    height: 40px;
+    line-height: 40px;
+    margin: 10px;
+    border-radius: 4px;
+    background: #222;
+    outline: 0;
+    padding: 0 20px;
+    font-size: 18px;
+    font-weight: 300;
+    letter-spacing: 3px;
+    font-family: 'Montserrat', sans-serif;
+    border: 1px solid #fff;
+    border-radius: 10px;
+    width: calc(100% - 40px);
+}
+
+::-webkit-input-placeholder {
+    color: #ffffff50;
+}
+
+:-moz-placeholder {
+    color: #ffffff50;
+}
+
+::-moz-placeholder {
+    color: #ffffff50;
+}
+
+:-ms-input-placeholder {
+    color: #ffffff50;
 }

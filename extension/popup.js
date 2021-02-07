@@ -13,6 +13,7 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById("popup_auth").style.display = 'none';
         document.getElementById("popup_phrase").style.display = 'none';
         document.getElementById("popup_account").style.display = 'none';
+        document.getElementById("popup_login").style.display = 'none';
 
         document.getElementById(_popup).style.display = 'flex';
     }
@@ -21,10 +22,20 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function init() {
         document.getElementById("popup_auth_btn").onclick = handleAuthBtn;
+        document.getElementById("popup_auth0_btn").onclick = handleAuth0Btn;
     }
 
     function getRandomInRange(min, max) {
         return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    function handleAuth0Btn() {
+        onPopup('popup_login');
+        document.getElementById("popup_login_btn").onclick = handlePhraseBtn;
+        localStorage.setItem('account', JSON.stringify({
+            'id': `0.0.101${getRandomInRange(1, 99)}`,
+            'balance': 9420,
+        }));
     }
 
     function handleAuthBtn() {
@@ -41,14 +52,17 @@ document.addEventListener('DOMContentLoaded', function() {
                 document.getElementById("popup_phrase_list").append(wordBlock);
             }
         }
-        localStorage.setItem('account', Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15));
+        localStorage.setItem('account', JSON.stringify({
+            'id': `0.0.101${getRandomInRange(1, 99)}`,
+            'balance': 0,
+        }));
         document.getElementById("popup_phrase_btn").onclick = handlePhraseBtn;
     }
 
     function handlePhraseBtn() {
         onPopup('popup_account');
-        document.getElementById("popup_id").innerHTML = localStorage.getItem('account');
-        document.getElementById("popup_balance").innerHTML = '10000';
+        document.getElementById("popup_id").innerHTML = JSON.parse(localStorage.getItem('account')).id;
+        document.getElementById("popup_balance").innerHTML = `${JSON.parse(localStorage.getItem('account')).balance} HBAR`;
         document.getElementById("popup_account_btn").onclick = handleAccountBtn;
     }
 
