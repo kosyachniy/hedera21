@@ -15,6 +15,8 @@ package-lock.json
 */build
 */node_modules
 *DS_Store
+.env
+sets.js
 
 .vscode
 .idea
