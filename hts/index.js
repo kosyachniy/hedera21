@@ -6,11 +6,14 @@ require("dotenv").config();
 
 
 async function main() {
-	// My acc
+	// My account
 
 	const treasuryAccountId = process.env.ACCOUNT_ID;
 	const treasuryPrivateKey = process.env.PRIVATE_KEY;
+	// const adminPrivateKey = await PrivateKey.generate();
 	// const treasuryPublicKey = PrivateKey.fromString(treasuryPrivateKey).publicKey.toString();
+	const adminPrivateKey = PrivateKey.fromString(treasuryPrivateKey);
+	const adminPublicKey = adminPrivateKey.publicKey;
 
 	if (treasuryAccountId == null || treasuryPrivateKey == null ) {
 		throw new Error("Environment variables treasuryAccountId and treasuryPrivateKey must be present");
@@ -18,46 +21,42 @@ async function main() {
 
 	// Admin key for HTS
 
-	// const adminPrivateKey = await PrivateKey.generate();
-	// const adminPublicKey = adminPrivateKey.publicKey;
-	const adminPrivateKey = PrivateKey.fromString(treasuryPrivateKey);
-	const adminPublicKey = adminPrivateKey.publicKey;
 
 	// Make main acc
 
 	const client = Client.forTestnet();
 	client.setOperator(treasuryAccountId, treasuryPrivateKey);
 
-	// Create token
+	// // Create token
 
-	const transaction = await new TokenCreateTransaction()
-	.setTokenName("Token name")
-	.setTokenSymbol("HGC")
-	.setTreasuryAccountId(treasuryAccountId)
-	.setInitialSupply(5000)
-	.setAdminKey(adminPublicKey)
-	.freezeWith(client);
+	// const transaction = await new TokenCreateTransaction()
+	// .setTokenName("Token name")
+	// .setTokenSymbol("HGC")
+	// .setTreasuryAccountId(treasuryAccountId)
+	// .setInitialSupply(5000)
+	// .setAdminKey(adminPublicKey)
+	// .freezeWith(client);
 
-	const preTx = await transaction.sign(adminPrivateKey);
-	const signTx = await preTx.sign(adminPrivateKey);
-	const txResponse = await signTx.execute(client);
+	// const preTx = await transaction.sign(adminPrivateKey);
+	// const signTx = await preTx.sign(adminPrivateKey);
+	// const txResponse = await signTx.execute(client);
 
-	console.log(txResponse)
+	// console.log(txResponse)
 
-	// // New acc
+	// New acc
 
-	// const newAccountPrivateKey = await PrivateKey.generate();
-	// const newAccountPublicKey = newAccountPrivateKey.publicKey;
+	const newAccountPrivateKey = await PrivateKey.generate();
+	const newAccountPublicKey = newAccountPrivateKey.publicKey;
 
-	// const newAccountTransactionResponse = await new AccountCreateTransaction()
-	//     .setKey(newAccountPublicKey)
-	//     .setInitialBalance(Hbar.fromTinybars(1000))
-	//     .execute(client);
+	const newAccountTransactionResponse = await new AccountCreateTransaction()
+	    .setKey(newAccountPublicKey)
+	    .setInitialBalance(Hbar.fromTinybars(1000))
+	    .execute(client);
 
-	// const getReceipt = await newAccountTransactionResponse.getReceipt(client);
-	// const newAccountId = getReceipt.accountId;
+	const getReceipt = await newAccountTransactionResponse.getReceipt(client);
+	const newAccountId = getReceipt.accountId;
 
-	// console.log("The new account ID is: " +newAccountId);
+	console.log(newAccountPrivateKey.toString(), newAccountPublicKey.toString(), newAccountId.toString());
 
 	// // Balance check
 
@@ -65,7 +64,7 @@ async function main() {
 	//     .setAccountId(newAccountId)
 	//     .execute(client);
 
-	// console.log("The new account balance is: " +accountBalance.hbars.toTinybars() +" tinybar.");
+	// console.log("The new account balance is: " + accountBalance.hbars.toTinybars() + " tinybar.");
 
 	// // Transfer
 
