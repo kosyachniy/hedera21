@@ -8,6 +8,46 @@ html {
     background: #222;
 }
 
+#popup_auth,
+#popup_account,
+#popup_phrase {
+    display: none;
+}
+
+#popup_phrase {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+#popup_phrase_list {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+#popup_auth,
+#popup_account {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    padding: 20px;
+}
+
+#popup_phrase_btn {
+    display: block;
+}
+
+.word_block {
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid #fff;
+    margin: 7px;
+}
+
 .popup_title {
     font-size: 24px;
     text-align: center;

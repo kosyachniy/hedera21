@@ -1,6 +1,6 @@
 {
     "manifest_version": 2,
-    "name": "Hedera Smart Tickets",
+    "name": "HederaMask",
     "description": "Chrome extension for Hedera21",
     "version": "1.0.0",
     "icons": {
@@ -11,7 +11,7 @@
     },
 
     "browser_action": {
-        "default_title": "Hedera Smart Tickets",
+        "default_title": "HederaMask",
         "default_popup": "popup.html",
 
         "default_icon": {
