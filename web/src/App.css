@@ -19,7 +19,7 @@ body {
 }
 
 .btn {
-    display: table;
+    display: block;
     color: #fff;
     cursor: pointer;
     outline: 0px;
@@ -31,6 +31,12 @@ body {
     padding: 14px 28px;
     font-size: 18px;
     text-align: center;
+    margin: 0 15px;
+}
+
+.btn_disabled {
+    opacity: 0.3 !important;
+    cursor: default;
 }
 
 .btn:hover {

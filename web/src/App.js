@@ -5,11 +5,14 @@ import {
 import './App.css';
 
 const qrcode = require('qrcode-generator');
+const { createToken, buyToken, getBalance } = require("./hts.js");
 
 const App = () => {
-	const [userCredentials, setUserCredentials] = useState([]);
+	const [userCredentials, setUserCredentials] = useState(null);
+	const [userTokens, setUserTokens] = useState(null);
 	const [eventData, setEventData] = useState({
 		title: '',
+		tokenName: '',
 		description: '',
 		price: '',
 		link: '',
@@ -24,43 +27,65 @@ const App = () => {
 			const eventDataTemp = JSON.parse(localStorage.getItem('eventData'));
 			setEventData(eventDataTemp);
 		}
+
+		if (true) {
+			setUserCredentials({
+				accountId: '0.0.307141',
+				privateKey: '302e020100300506032b6570042204201b00250e3e1892eba8f81ee42b401354095bc59e2017c4942b6be8daf7a76844',
+			});
+		}
 	}, []);
+
+	useEffect(() => {
+		if (userCredentials && document.location.pathname.indexOf('event') !== -1) {
+			getBalance(userCredentials.accountId).then((tokens) => {
+				setUserTokens(JSON.parse(tokens));
+			});
+		} else if (userCredentials && document.location.pathname.indexOf('qr') !== -1) {
+			setTimeout(() => {
+				const qr = qrcode(4, 'L');
+				qr.addData(`/qr/${document.location.pathname.split('/')[2]}`);
+				qr.make();
+				document.getElementById('qr-code').innerHTML = qr.createImgTag();
+			}, 200);
+		}
+	}, [userCredentials]);
 
 	const setInput = (e, type) => {
     setEventData({ ...eventData, [type]: e.target.value });
   };
 
 	const createEvent = () => {
-		// eventData
-		localStorage.setItem('eventData', JSON.stringify(eventData));
+		createToken(eventData.title, eventData.tokenName.toUpperCase()).then((token) => {
+			console.log(token);
+			eventData.token = token
+			localStorage.setItem('eventData', JSON.stringify(eventData));
 
-		const linkHash = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
-
-		setEventData({
-			title: '',
-			description: '',
-			price: '',
-			link: `${document.location.origin}/event/${linkHash.substr(0, 18)}`,
+			setEventData({
+				title: '',
+				tokenName: '',
+				description: '',
+				price: '',
+				link: `${document.location.origin}/event/${eventData.tokenName.toUpperCase()}`,
+			});
 		});
   };
 
 	const buyTicket = () => {
-		console.log('!');
+		buyToken(eventData.token, 1, userCredentials.accountId, userCredentials.privateKey).then((res) => {
+			getBalance(userCredentials.accountId).then((result) => {
+				console.log(result);
+				// document.location.reload();
+			});
+		});
   };
 
 	const sellTicket = () => {
 		console.log('!');
   };
-	
-	const checkIn = () => {
-		onRedirect(`/qr/${document.location.pathname.split('/')[2]}`);
 
-		const qr = qrcode(4, 'L');
-		qr.addData(`/qr/${document.location.pathname.split('/')[2]}`);
-		qr.make();
-		setTimeout(() => {
-			document.getElementById('qr-code').innerHTML = qr.createImgTag();
-		}, 200);
+	const checkIn = () => {
+		document.location.href = `${document.location.origin}/qr/${document.location.pathname.split('/')[2]}`
   };
 
 	const onRedirect = (_path) => {
@@ -88,6 +113,13 @@ const App = () => {
 											value={eventData.title}
 											onChange={(e) => setInput(e, 'title')}
 											placeholder="Title"
+										/>
+										<input
+											type="text"
+											value={eventData.tokenName}
+											onChange={(e) => setInput(e, 'tokenName')}
+											placeholder="Token name"
+											maxLength="5"
 										/>
 										<textarea
 											type="text"
@@ -120,16 +152,22 @@ const App = () => {
 									<div className='event_subtitle'>{eventData.description}</div>
 									<div className='event_subtitle'>{eventData.price}</div>
 								</div>
-								<div className='event_bottom'>
-									{false ? (
-										<>
-											<div className='btn' onClick={sellTicket}>Sell</div>
-											<div className='btn' onClick={checkIn}>Check in</div>
-										</>
-									) : (
-										<div className='btn' onClick={buyTicket}>Buy</div>
-									)}
-								</div>
+								{userCredentials && userTokens ? (
+									<div className='event_bottom'>
+										{Object.keys(userTokens).indexOf(eventData.token) !== -1 ? (
+											<>
+												<div className='btn' onClick={sellTicket}>Sell</div>
+												<div className='btn' onClick={checkIn}>Check in</div>
+											</>
+										) : (
+											<div className='btn' onClick={buyTicket}>Buy</div>
+										)}
+									</div>
+								) : (
+									<div className='event_bottom'>
+										<div className='btn btn_disabled' disabled>Buy</div>
+									</div>
+								)}
 							</div>
 						</div>
 					</Route>

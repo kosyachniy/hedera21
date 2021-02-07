@@ -8,9 +8,10 @@
     "build": "react-scripts build"
   },
   "dependencies": {
-    "@hashgraph/sdk": "^1.4.6",
+    "@hashgraph/sdk": "^2.0.13",
     "axios": "^0.21.1",
     "core-js": "^3.6.1",
+    "dotenv": "^8.2.0",
     "prop-types": "^15.7.2",
     "qrcode-generator": "^1.4.4",
     "react": "^16.12.0",
