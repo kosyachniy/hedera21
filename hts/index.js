@@ -1,58 +1,45 @@
-const { Client, PrivateKey, AccountCreateTransaction, AccountBalanceQuery, Hbar, TransferTransaction, TokenCreateTransaction } = require("@hashgraph/sdk");
+const {
+	Client, PrivateKey, AccountCreateTransaction, AccountBalanceQuery, Hbar,
+	TransferTransaction, TokenCreateTransaction,
+} = require("@hashgraph/sdk");
 require("dotenv").config();
-
-
-// const newAccountId = "0.0.305125"
-// const adminPublicKey = "302a300506032b6570032100c07ef92f27e47f4dc2df80ea9696038c8c6210423f78770fe291958b5b58b851";
 
 
 async function main() {
 	// My acc
 
-    const treasuryAccountId = process.env.MY_ACCOUNT_ID;
-    const myPrivateKey = process.env.MY_PRIVATE_KEY;
-	const treasuryKey = process.env.MY_PRIVATE_KEY;
+    const treasuryAccountId = process.env.ACCOUNT_ID;
+    const treasuryPrivateKey = process.env.PRIVATE_KEY;
+    // const treasuryPublicKey = PrivateKey.fromString(treasuryPrivateKey).publicKey.toString();
 
-    if (treasuryAccountId == null ||
-        myPrivateKey == null ) {
-        throw new Error("Environment variables treasuryAccountId and myPrivateKey must be present");
+    if (treasuryAccountId == null || treasuryPrivateKey == null ) {
+        throw new Error("Environment variables treasuryAccountId and treasuryPrivateKey must be present");
     }
 
 	// Admin key for HTS
 
-	const privateKey = await PrivateKey.generate();
-	const key = privateKey.toString();
-	const adminKey = privateKey.toString();
-	// if (adminKey) {
-
-	// }
-	const sigKey = PrivateKey.fromString(key);
-	const adminPublicKey = sigKey.publicKey;
-	// tx.setAdminKey(sigKey.publicKey);
+	// const adminPrivateKey = await PrivateKey.generate();
+	// const adminPublicKey = adminPrivateKey.publicKey;
+	const adminPrivateKey = PrivateKey.fromString(treasuryPrivateKey);
+	const adminPublicKey = PrivateKey.fromString(treasuryPrivateKey).publicKey;
 
 	// Make main acc
 
     const client = Client.forTestnet();
-
-    client.setOperator(treasuryAccountId, myPrivateKey);
+    client.setOperator(treasuryAccountId, treasuryPrivateKey);
 
 	// Create token
 
 	const transaction = await new TokenCreateTransaction()
-	.setTokenName("Your Token Name")
+	.setTokenName("Token name")
 	.setTokenSymbol("HGC")
 	.setTreasuryAccountId(treasuryAccountId)
 	.setInitialSupply(5000)
 	.setAdminKey(adminPublicKey)
 	.freezeWith(client);
 
-	console.log(adminKey, transaction);
-
-	// const preTx = await transaction.sign(sigKey); // adminKey
-	// const signTx = await preTx.sign(adminPublicKey); // treasuryKey
-
-	// const signTx = await (await transaction.sign(adminKey)).sign(treasuryKey);
-	const signTx = await (await transaction.sign(sigKey)).sign(privateKey);
+	const preTx = await transaction.sign(adminPrivateKey);
+	const signTx = await preTx.sign(adminPrivateKey);
 	const txResponse = await signTx.execute(client);
 
 	console.log(txResponse)
