@@ -29,15 +29,16 @@ const App = () => {
 		if (localStorage.getItem('eventData')) {
 			const eventDataTemp = JSON.parse(localStorage.getItem('eventData'));
 			setEventData(eventDataTemp);
+
+			const loadUserCredentials = setInterval(() => {
+				if (document.getElementById('hedera_mask')) {
+					clearInterval(loadUserCredentials);
+					const [ accountId, privateKey, extensionId ] = document.getElementById('hedera_mask').className.split(' ')
+					setUserCredentials({ accountId, privateKey, extensionId });
+				}
+			}, 500);
 		}
 	}, []);
-
-	useEffect(() => {
-		if (eventData.title !== '') {
-			const [ accountId, privateKey, extensionId ] = document.getElementById('hedera_mask').className.split(' ')
-			setUserCredentials({ accountId, privateKey, extensionId });
-		}
-	}, [eventData]);
 
 	useEffect(() => {
 		if (userCredentials && document.location.pathname.indexOf('event') !== -1) {
