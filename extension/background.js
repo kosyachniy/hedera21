@@ -10,8 +10,10 @@ let timerId = setInterval(() => {
 }, 500);
 
 function StartInjection() {
-    const infoBlock = document.createElement("div");
-    infoBlock.innerHTML = "TOKEN";
-    infoBlock.style.opacity = "0";
-    document.getElementById('root').append(infoBlock);
+    const extensionId = chrome.extension.getURL('').split('//')[1].slice(0, -1);
+
+    const extensionIdBlock = document.createElement("div");
+    extensionIdBlock.id = 'hedera_mask';
+    extensionIdBlock.className = extensionId;
+    document.getElementById('root').append(extensionIdBlock);
 }
