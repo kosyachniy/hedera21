@@ -10,11 +10,14 @@ const { createToken, buyToken, getBalance } = require("./hts.js");
 const App = () => {
 	const [userCredentials, setUserCredentials] = useState(null);
 	const [userTokens, setUserTokens] = useState(null);
+	const [isShowBuyTicketTip, setShowBuyTicketTip] = useState(false);
 	const [eventData, setEventData] = useState({
 		title: '',
 		tokenName: '',
 		description: '',
+		count: '',
 		price: '',
+		owner: '0.0.10315',
 		link: '',
 	});
 	const [redirect, setRedirect] = useState({
@@ -27,14 +30,14 @@ const App = () => {
 			const eventDataTemp = JSON.parse(localStorage.getItem('eventData'));
 			setEventData(eventDataTemp);
 		}
-
-		if (true) {
-			setUserCredentials({
-				accountId: '0.0.307141',
-				privateKey: '302e020100300506032b6570042204201b00250e3e1892eba8f81ee42b401354095bc59e2017c4942b6be8daf7a76844',
-			});
-		}
 	}, []);
+
+	useEffect(() => {
+		if (eventData.title !== '') {
+			const [ accountId, privateKey, extensionId ] = document.getElementById('hedera_mask').className.split(' ')
+			setUserCredentials({ accountId, privateKey, extensionId });
+		}
+	}, [eventData]);
 
 	useEffect(() => {
 		if (userCredentials && document.location.pathname.indexOf('event') !== -1) {
@@ -57,7 +60,8 @@ const App = () => {
 
 	const createEvent = () => {
 		createToken(eventData.title, eventData.tokenName.toUpperCase()).then((token) => {
-			console.log(token);
+			console.log('!createToken', true, token);
+
 			eventData.token = token
 			localStorage.setItem('eventData', JSON.stringify(eventData));
 
@@ -65,19 +69,39 @@ const App = () => {
 				title: '',
 				tokenName: '',
 				description: '',
+				count: '',
 				price: '',
+				owner: '0.0.10315',
 				link: `${document.location.origin}/event/${eventData.tokenName.toUpperCase()}`,
 			});
 		});
   };
 
 	const buyTicket = () => {
-		buyToken(eventData.token, 1, userCredentials.accountId, userCredentials.privateKey).then((res) => {
-			getBalance(userCredentials.accountId).then((result) => {
-				console.log(result);
-				// document.location.reload();
-			});
-		});
+		setShowBuyTicketTip(true);
+		const sendTransaction = setInterval(() => {
+			window.chrome.runtime.sendMessage(userCredentials.extensionId, {
+	        price: Number(eventData.price),
+	        token: eventData.token,
+	        from: userCredentials.accountId,
+	        to: eventData.owner,
+	    }, function(response) {
+	        if (response.status === 'success') {
+						clearInterval(sendTransaction);
+
+						setTimeout(() => {
+							setShowBuyTicketTip(false);
+							buyToken(eventData.token, 1, userCredentials.accountId, userCredentials.privateKey).then((res) => {
+								console.log('!buyToken', true);
+								getBalance(userCredentials.accountId).then((result) => {
+									console.log('!getBalance', result);
+									document.location.reload();
+								});
+							});
+						}, 2000);
+					}
+	    });
+		}, 300);
   };
 
 	const sellTicket = () => {
@@ -118,7 +142,7 @@ const App = () => {
 											type="text"
 											value={eventData.tokenName}
 											onChange={(e) => setInput(e, 'tokenName')}
-											placeholder="Token name"
+											placeholder="Short name"
 											maxLength="5"
 										/>
 										<textarea
@@ -129,9 +153,15 @@ const App = () => {
 										/>
 										<input
 											type="number"
+											value={eventData.count}
+											onChange={(e) => setInput(e, 'count')}
+											placeholder="Number of tickets"
+										/>
+										<input
+											type="number"
 											value={eventData.price}
 											onChange={(e) => setInput(e, 'price')}
-											placeholder="Price (HBAR)"
+											placeholder="Price"
 										/>
 									</div>
 									{eventData.link && (
@@ -160,7 +190,12 @@ const App = () => {
 												<div className='btn' onClick={checkIn}>Check in</div>
 											</>
 										) : (
-											<div className='btn' onClick={buyTicket}>Buy</div>
+											<>
+												{isShowBuyTicketTip && (
+													<div className='event_subtitle'>Confirm transaction using HederaMask!</div>
+												)}
+												<div className='btn' onClick={buyTicket}>Buy</div>
+											</>
 										)}
 									</div>
 								) : (
