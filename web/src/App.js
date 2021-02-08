@@ -81,30 +81,30 @@ const App = () => {
 	const buyTicket = () => {
 		setShowBuyTicketTip(true);
 		const sendTransaction = setInterval(() => {
-			try {
-				window.chrome.runtime.sendMessage(userCredentials.extensionId, {
-		        price: Number(eventData.price),
-		        token: eventData.token,
-		        from: userCredentials.accountId,
-		        to: eventData.owner,
-		    }, function(response) {
-		        if (response.status === 'success') {
-							clearInterval(sendTransaction);
+			window.chrome.runtime.sendMessage(userCredentials.extensionId, {
+	        price: Number(eventData.price),
+	        token: eventData.token,
+	        from: userCredentials.accountId,
+	        to: eventData.owner,
+	    }, function(response) {
+	        if (response && response.status === 'success') {
+						clearInterval(sendTransaction);
 
-							setTimeout(() => {
-								setShowBuyTicketTip(false);
-								buyToken(eventData.token, 1, userCredentials.accountId, userCredentials.privateKey).then((res) => {
-									console.log('!buyToken', true);
-									getBalance(userCredentials.accountId).then((result) => {
-										console.log('!getBalance', result);
+						setTimeout(() => {
+							setShowBuyTicketTip(false);
+							buyToken(eventData.token, 1, userCredentials.accountId, userCredentials.privateKey).then((res) => {
+								console.log('!buyToken', true);
+								getBalance(userCredentials.accountId).then((result) => {
+									console.log('!getBalance', result);
+									setTimeout(() => {
 										document.location.reload();
-									});
+									}, 2000);
 								});
-							}, 7000);
-						}
-		    });
-			} catch {}
-		}, 300);
+							});
+						}, 7000);
+					}
+	    });
+		}, 500);
   };
 
 	const sellTicket = () => {
@@ -195,9 +195,10 @@ const App = () => {
 										) : (
 											<>
 												{isShowBuyTicketTip && (
-													<div className='event_subtitle'>Confirm transaction using HederaMask!</div>
+													<div className='event_subtitle' style={{ color: '#3d7eeb' }}>Confirm transaction using HederaMask!</div>
+												) : (
+													<div className='btn' onClick={buyTicket}>Buy</div>
 												)}
-												<div className='btn' onClick={buyTicket}>Buy</div>
 											</>
 										)}
 									</div>
