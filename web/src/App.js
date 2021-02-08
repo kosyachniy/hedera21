@@ -194,7 +194,7 @@ const App = () => {
 											</>
 										) : (
 											<>
-												{isShowBuyTicketTip && (
+												{isShowBuyTicketTip ? (
 													<div className='event_subtitle' style={{ color: '#3d7eeb' }}>Confirm transaction using HederaMask!</div>
 												) : (
 													<div className='btn' onClick={buyTicket}>Buy</div>
