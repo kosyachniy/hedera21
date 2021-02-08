@@ -1,35 +1,48 @@
 {
-    "manifest_version": 2,
-    "name": "HederaMask",
-    "description": "Chrome extension for Hedera21",
-    "version": "1.0.0",
-    "icons": {
+  "manifest_version": 2,
+  "name": "HederaMask",
+  "description": "Chrome extension for Hedera21",
+  "version": "1.0.0",
+  "icons": {
+    "16": "icon.png",
+    "32": "icon.png",
+    "48": "icon.png",
+    "128": "icon.png"
+  },
+
+  "browser_action": {
+    "default_title": "HederaMask",
+    "default_popup": "popup.html",
+
+    "default_icon": {
       "16": "icon.png",
       "32": "icon.png",
       "48": "icon.png",
       "128": "icon.png"
-    },
+    }
+  },
 
-    "browser_action": {
-        "default_title": "HederaMask",
-        "default_popup": "popup.html",
+  "content_scripts": [{
+    "matches": ["https://ecogeneration.online/*"],
+    "js": ["background.js"],
+    "css": ["background.css"],
+    "run_at": "document_idle"
+  }],
 
-        "default_icon": {
-            "16": "icon.png",
-            "32": "icon.png",
-            "48": "icon.png",
-            "128": "icon.png"
-        }
-    },
+  "externally_connectable": {
+    "matches": ["https://ecogeneration.online/*"]
+  },
 
-    "content_scripts": [{
-        "matches": ["https://ecogeneration.online/*"],
-        "js": ["background.js"],
-        "css": ["background.css"],
-        "run_at": "document_idle"
-    }],
+  "permissions": [
+    "activeTab"
+  ],
 
-    "permissions": [
-        "activeTab"
-    ]
+  "commands": {
+    "toggle-feature-foo": {
+      "suggested_key": {
+        "mac": "Command+Shift+Y"
+      },
+      "description": "Opens popup.html"
+    }
+  }
 }
