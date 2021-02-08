@@ -24,6 +24,7 @@ html {
 
 #popup_auth,
 #popup_login,
+#popup_submit,
 #popup_account {
     display: flex;
     align-items: center;
@@ -39,6 +40,7 @@ html {
 #popup_auth,
 #popup_account,
 #popup_login,
+#popup_submit,
 #popup_phrase {
     display: none;
 }
@@ -91,6 +93,11 @@ html {
 
 .popup-btn:hover {
     opacity: 0.8;
+}
+
+.popup-btn-reject {
+    margin-top: 10px;
+    background: #595959;
 }
 
 input {
