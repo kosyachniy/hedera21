@@ -81,27 +81,29 @@ const App = () => {
 	const buyTicket = () => {
 		setShowBuyTicketTip(true);
 		const sendTransaction = setInterval(() => {
-			window.chrome.runtime.sendMessage(userCredentials.extensionId, {
-	        price: Number(eventData.price),
-	        token: eventData.token,
-	        from: userCredentials.accountId,
-	        to: eventData.owner,
-	    }, function(response) {
-	        if (response.status === 'success') {
-						clearInterval(sendTransaction);
+			try {
+				window.chrome.runtime.sendMessage(userCredentials.extensionId, {
+		        price: Number(eventData.price),
+		        token: eventData.token,
+		        from: userCredentials.accountId,
+		        to: eventData.owner,
+		    }, function(response) {
+		        if (response.status === 'success') {
+							clearInterval(sendTransaction);
 
-						setTimeout(() => {
-							setShowBuyTicketTip(false);
-							buyToken(eventData.token, 1, userCredentials.accountId, userCredentials.privateKey).then((res) => {
-								console.log('!buyToken', true);
-								getBalance(userCredentials.accountId).then((result) => {
-									console.log('!getBalance', result);
-									document.location.reload();
+							setTimeout(() => {
+								setShowBuyTicketTip(false);
+								buyToken(eventData.token, 1, userCredentials.accountId, userCredentials.privateKey).then((res) => {
+									console.log('!buyToken', true);
+									getBalance(userCredentials.accountId).then((result) => {
+										console.log('!getBalance', result);
+										document.location.reload();
+									});
 								});
-							});
-						}, 2000);
-					}
-	    });
+							}, 7000);
+						}
+		    });
+			} catch {}
 		}, 300);
   };
 
