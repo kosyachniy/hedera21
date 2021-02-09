@@ -1,3 +1,6 @@
+import {
+    server
+} from './sets.js';
 const {
     Client,
     PrivateKey,
@@ -10,8 +13,8 @@ const {
 require("dotenv").config();
 
 
-const treasuryAccountId = process.env.ACCOUNT_ID;
-const treasuryPrivateKey = process.env.PRIVATE_KEY;
+const treasuryAccountId = server.accountId;
+const treasuryPrivateKey = server.privateKey;
 const adminPrivateKey = PrivateKey.fromString(treasuryPrivateKey);
 const adminPublicKey = adminPrivateKey.publicKey;
 
