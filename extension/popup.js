@@ -96,8 +96,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
         document.getElementById("popup_submit_from").innerHTML = `From: ${JSON.parse(localStorage.getItem('account')).accountId}`;
         document.getElementById("popup_submit_to").innerHTML = `To: ${request.to}`;
-        document.getElementById("popup_submit_confirm_btn").onclick = function(sendResponse) {
-            sendResponse({
+        document.getElementById("popup_submit_confirm_btn").onclick = (e, sendResponseFunc = sendResponse) => {
+            sendResponseFunc({
                 status: 'success',
                 accountId: JSON.parse(localStorage.getItem('account')).accountId,
                 privateKey: JSON.parse(localStorage.getItem('account')).privateKey,
@@ -114,8 +114,8 @@ document.addEventListener('DOMContentLoaded', function() {
             }));
             onLoad();
         };
-        document.getElementById("popup_submit_reject_btn").onclick = function(sendResponse) {
-            sendResponse({
+        document.getElementById("popup_submit_reject_btn").onclick = (e, sendResponseFunc = sendResponse) => {
+            sendResponseFunc({
                 status: 'failure',
             });
             onLoad();

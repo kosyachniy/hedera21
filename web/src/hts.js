@@ -23,7 +23,7 @@ const client = Client.forTestnet();
 client.setOperator(treasuryAccountId, treasuryPrivateKey);
 
 
-async function createToken(name, symbol) {
+export async function createToken(name, symbol) {
     const transaction = await new TokenCreateTransaction()
         .setTokenName(name)
         .setTokenSymbol(symbol)
@@ -40,7 +40,7 @@ async function createToken(name, symbol) {
     return txReceipt.tokenId.toString();
 }
 
-async function buyToken(tokenId, count, accountId, accountKey) {
+export async function buyToken(tokenId, count, accountId, accountKey) {
     // Associate
 
     try {
@@ -71,7 +71,7 @@ async function buyToken(tokenId, count, accountId, accountKey) {
     return txResponse.transactionId.toString();
 }
 
-async function burnToken(tokenId, count, accountId, accountKey) {
+export async function burnToken(tokenId, count, accountId, accountKey) {
     // Transfer
 
     try {
@@ -89,7 +89,7 @@ async function burnToken(tokenId, count, accountId, accountKey) {
     }
 }
 
-async function getBalance(accountId) {
+export async function getBalance(accountId) {
     const query = new AccountBalanceQuery().setAccountId(accountId);
     const tokenBalance = await query.execute(client);
     return tokenBalance.tokens.toString();
