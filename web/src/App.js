@@ -258,29 +258,31 @@ const App = () => {
 									<div className='event_subtitle'>{`${eventData.price} HBAR`}</div>
 								</div>
 								{userCredentials ? (
-									<div className='event_bottom'>
+									<>
 										{userTokens && Object.keys(userTokens).indexOf(eventData.token) !== -1 ? (
-											<>
+											<div className='event_bottom'>
 												{isShowCheckInTip ? (
 													<div className='event_subtitle' style={{ color: '#3d7eeb' }}>Confirm transaction using HederaMask!</div>
 												) : (
 													<>
 														<div className='btn' onClick={transferTicket}>Transfer</div>
 														<div className='btn' onClick={sellTicket}>Sell</div>
-														<div className='btn' onClick={checkIn}>Check in</div>
+                            <div className='btn_block'>
+														  <div className='btn' onClick={checkIn}>Check in</div>
+                            </div>
 													</>
 												)}
-											</>
+											</div>
 										) : (
-											<>
+											<div className='event_bottom'>
 												{isShowBuyTicketTip ? (
 													<div className='event_subtitle' style={{ color: '#3d7eeb' }}>Confirm transaction using HederaMask!</div>
 												) : (
 													<div className='btn' onClick={buyTicket}>Buy</div>
 												)}
-											</>
+											</div>
 										)}
-									</div>
+									</>
 								) : (
 									<>
 										<div className='event_bottom'>
