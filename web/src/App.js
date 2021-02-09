@@ -198,18 +198,21 @@ const App = () => {
 														value={eventData.title}
 														onChange={(e) => setInput(e, 'title')}
 														placeholder="Title"
+                            required
 													/>
 													<input
 														type="number"
 														value={eventData.count}
 														onChange={(e) => setInput(e, 'count')}
 														placeholder="Number of tickets"
+                            required
 													/>
 													<input
 														type="number"
 														value={eventData.price}
 														onChange={(e) => setInput(e, 'price')}
 														placeholder="Ticket price (HBAR)"
+                            required
 													/>
 												</div>
 										</div>
