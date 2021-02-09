@@ -1,6 +1,7 @@
 const {
 	Client, PrivateKey, TokenCreateTransaction, AccountBalanceQuery,
 	TransferTransaction, TokenAssociateTransaction, Hbar,
+	AccountCreateTransaction,
 } = require("@hashgraph/sdk");
 require("dotenv").config();
 
@@ -15,6 +16,21 @@ const client = Client.forTestnet();
 client.setOperator(treasuryAccountId, treasuryPrivateKey);
 
 
+async function createAccount() {
+	const newAccountPrivateKey = await PrivateKey.generate();
+	const newAccountPublicKey = newAccountPrivateKey.publicKey;
+
+	const txResponse = await new AccountCreateTransaction()
+	.setKey(newAccountPublicKey)
+	.setInitialBalance(Hbar.fromTinybars(1000))
+	.execute(client);
+
+	const txReceipt = await txResponse.getReceipt(client);
+	const newAccountId = txReceipt.accountId;
+
+	return [newAccountId.toString(), newAccountPrivateKey.toString()];
+}
+
 async function createToken(name, symbol) {
 	const transaction = await new TokenCreateTransaction()
 	.setTokenName(name)
@@ -27,8 +43,9 @@ async function createToken(name, symbol) {
 	const preTx = await transaction.sign(adminPrivateKey);
 	const signTx = await preTx.sign(adminPrivateKey);
 	const txResponse = await signTx.execute(client);
-	const txReceipt = await txResponse.getReceipt(client);
+	// console.log(txResponse.transactionId.toString());
 
+	const txReceipt = await txResponse.getReceipt(client);
 	return txReceipt.tokenId.toString();
 }
 
@@ -105,20 +122,23 @@ async function transfer(fromId, toId, fromKey) {
 
 
 async function main() {
-	const token = await createToken("Token", "TOK");
-	console.log(token);
+	const [accId, accKey] = await createAccount();
+	console.log(accId, accKey);
+
+	// const token = await createToken("Token", "TOK");
+	// console.log(token);
 
 	// const balance_transfer = await transfer(treasuryAccountId, "0.0.307141", treasuryPrivateKey);
 	// console.log(balance_transfer);
 
-	const transaction_buy = await buyToken("0.0.305536", 1, "0.0.307141", "302e020100300506032b6570042204201b00250e3e1892eba8f81ee42b401354095bc59e2017c4942b6be8daf7a76844");
-	console.log(transaction_buy);
+	// const transaction_buy = await buyToken("0.0.305536", 1, "0.0.307141", "302e020100300506032b6570042204201b00250e3e1892eba8f81ee42b401354095bc59e2017c4942b6be8daf7a76844");
+	// console.log(transaction_buy);
 
-	const transaction_burn = await burnToken("0.0.305536", 1, "0.0.307141", "302e020100300506032b6570042204201b00250e3e1892eba8f81ee42b401354095bc59e2017c4942b6be8daf7a76844");
-	console.log(transaction_burn);
+	// const transaction_burn = await burnToken("0.0.305536", 1, "0.0.307141", "302e020100300506032b6570042204201b00250e3e1892eba8f81ee42b401354095bc59e2017c4942b6be8daf7a76844");
+	// console.log(transaction_burn);
 
-	const balance = await getBalance("0.0.307141");
-	console.log(balance);
+	// const balance = await getBalance("0.0.307141");
+	// console.log(balance);
 }
 
 main();
