@@ -116,23 +116,26 @@ const App = () => {
 	        to: eventData.owner,
 	    }, function(response) {
 				if (response) {
-					setShowBuyTicketTip(false);
 					clearInterval(sendTransaction);
 					if (response.status === 'success') {
 						buyToken(eventData.token, 1, response.accountId, response.privateKey).then((res) => {
 							console.log('!buyToken', res);
-							getBalance(response.accountId).then((result) => {
-								console.log('!getBalance', result);
+              setTimeout(() => {
+                getBalance(response.accountId).then((result) => {
+        					setShowBuyTicketTip(false);
+  								console.log('!getBalance', result);
 
-								setUserTokens(JSON.parse(result));
-								localStorage.setItem('userTokens', JSON.stringify(result));
+  								setUserTokens(JSON.parse(result));
+  								localStorage.setItem('userTokens', JSON.stringify(result));
 
-								setTimeout(() => {
-									document.location.reload();
-								}, 2000);
-							});
+  								setTimeout(() => {
+  									document.location.reload();
+  								}, 2000);
+  							});
+              }, 2000);
 						});
 					} else {
+  					setShowBuyTicketTip(false);
 						console.log('!hederaMaskResponse', response);
 					}
 				}
