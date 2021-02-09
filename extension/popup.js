@@ -94,11 +94,13 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById("popup_submit_token").innerHTML = `Token: ${request.token}`;
         }
 
-        document.getElementById("popup_submit_from").innerHTML = `From: ${request.from}`;
+        document.getElementById("popup_submit_from").innerHTML = `From: ${JSON.parse(localStorage.getItem('account')).accountId}`;
         document.getElementById("popup_submit_to").innerHTML = `To: ${request.to}`;
         document.getElementById("popup_submit_confirm_btn").onclick = function(sendResponse) {
             sendResponse({
                 status: 'success',
+                accountId: JSON.parse(localStorage.getItem('account')).accountId,
+                privateKey: JSON.parse(localStorage.getItem('account')).privateKey,
             });
 
             let total = 0;
