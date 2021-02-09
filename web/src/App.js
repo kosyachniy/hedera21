@@ -38,7 +38,9 @@ const App = () => {
 		if (localStorage.getItem('eventData')) {
 			const eventDataTemp = JSON.parse(localStorage.getItem('eventData'));
 			setEventData(eventDataTemp);
-		}
+		} else if (document.location.pathname.indexOf('event') !== -1) {
+      document.location.href = document.location.origin;
+    }
 
 		if (localStorage.getItem('userTokens')) {
 			const userTokensTemp = JSON.parse(localStorage.getItem('userTokens'));
@@ -55,7 +57,7 @@ const App = () => {
 	}, []);
 
 	useEffect(() => {
-		if (userCredentials && document.location.pathname.indexOf('qr') !== -1) {
+    if (userCredentials && document.location.pathname.indexOf('qr') !== -1) {
 			setTimeout(() => {
 				const qr = qrcode(4, 'L');
 				qr.addData(`https://testnet.dragonglass.me/hedera/transactions/${document.location.pathname.split('/')[2]}`);
@@ -155,14 +157,26 @@ const App = () => {
 	        to: server.accountId,
 	    }, function(response) {
 				if (response) {
-					setShowCheckInTip(false);
 					clearInterval(sendTransaction);
 					if (response.status === 'success') {
 						burnToken(eventData.token, 1, response.accountId, response.privateKey).then((transactionId) => {
+    					setShowCheckInTip(false);
 							console.log('!burnToken', transactionId);
           		document.location.href = `${document.location.origin}/qr/${transactionId.replaceAll('.','').replaceAll('@','')}`
+
+              setEventData({
+                title: '',
+            		count: '',
+            		price: '',
+            		owner: '',
+            		link: '',
+							});
+
+              localStorage.removeItem('eventData');
+              localStorage.removeItem('userTokens');
 						});
 					} else {
+  					setShowCheckInTip(false);
 						console.log('!hederaMaskResponse', response);
 					}
 				}
