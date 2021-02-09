@@ -120,8 +120,8 @@ const App = () => {
 							getBalance(response.accountId).then((result) => {
 								console.log('!getBalance', result);
 
-								setUserTokens(JSON.parse(tokens));
-								localStorage.setItem('userTokens', JSON.stringify(tokens));
+								setUserTokens(JSON.parse(result));
+								localStorage.setItem('userTokens', JSON.stringify(result));
 
 								setTimeout(() => {
 									document.location.reload();
