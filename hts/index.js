@@ -1,6 +1,6 @@
 const {
 	createAccount, createToken, buyToken, burnToken,
-	getBalance, getTokenBalance, transfer,
+	getBalance, getTokenBalance, transfer, getToken,
 } = require("./hts");
 require("dotenv").config();
 
@@ -30,6 +30,9 @@ async function main() {
 
 	const balance_token = await getTokenBalance("0.0.307141");
 	console.log(balance_token);
+
+	const token_info = await getToken("0.0.305536");
+	console.log(token_info);
 }
 
 main();

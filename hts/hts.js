@@ -1,6 +1,7 @@
 const {
 	Client, PrivateKey, AccountCreateTransaction, TokenCreateTransaction,
 	AccountBalanceQuery, TransferTransaction, TokenAssociateTransaction, Hbar,
+	TokenInfoQuery,
 } = require("@hashgraph/sdk");
 require("dotenv").config();
 
@@ -127,5 +128,23 @@ async function transfer(fromId, toId, fromKey) {
 	return getNewBalance.hbars.toTinybars().toString();
 }
 
+async function getToken(tokenId) {
+	const info = await new TokenInfoQuery()
+	.setTokenId(tokenId)
+	.execute(client);
 
-module.exports = { createAccount, createToken, buyToken, burnToken, getBalance, getTokenBalance, transfer };
+	const res = {
+		name: info.name,
+		symbol: info.symbol,
+		count: info.totalSupply.toString(),
+		expiry: info.expiry,
+	}
+
+	return res;
+}
+
+
+module.exports = {
+	createAccount, createToken, buyToken, burnToken,
+	getBalance, getTokenBalance, transfer, getToken,
+};
