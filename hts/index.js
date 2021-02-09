@@ -1,87 +1,35 @@
 const {
-	Client, PrivateKey, AccountCreateTransaction, AccountBalanceQuery, Hbar,
-	TransferTransaction, TokenCreateTransaction,
-} = require("@hashgraph/sdk");
+	createAccount, createToken, buyToken, burnToken,
+	getBalance, getTokenBalance, transfer,
+} = require("./hts");
 require("dotenv").config();
 
 
+const treasuryAccountId = process.env.ACCOUNT_ID;
+const treasuryPrivateKey = process.env.PRIVATE_KEY;
+
+
 async function main() {
-	// My account
+	const [accId, accKey] = await createAccount();
+	console.log(accId, accKey);
 
-	const treasuryAccountId = process.env.ACCOUNT_ID;
-	const treasuryPrivateKey = process.env.PRIVATE_KEY;
-	// const adminPrivateKey = await PrivateKey.generate();
-	// const treasuryPublicKey = PrivateKey.fromString(treasuryPrivateKey).publicKey.toString();
-	const adminPrivateKey = PrivateKey.fromString(treasuryPrivateKey);
-	const adminPublicKey = adminPrivateKey.publicKey;
+	const token = await createToken("Token", "TOK");
+	console.log(token);
 
-	if (treasuryAccountId == null || treasuryPrivateKey == null ) {
-		throw new Error("Environment variables treasuryAccountId and treasuryPrivateKey must be present");
-	}
+	const balance_transfer = await transfer(treasuryAccountId, "0.0.307141", treasuryPrivateKey);
+	console.log(balance_transfer);
 
-	// Admin key for HTS
+	const transaction_buy = await buyToken("0.0.305536", 1, "0.0.307141", "302e020100300506032b6570042204201b00250e3e1892eba8f81ee42b401354095bc59e2017c4942b6be8daf7a76844");
+	console.log(transaction_buy);
 
+	const transaction_burn = await burnToken("0.0.305536", 1, "0.0.307141", "302e020100300506032b6570042204201b00250e3e1892eba8f81ee42b401354095bc59e2017c4942b6be8daf7a76844");
+	console.log(transaction_burn);
 
-	// Make main acc
+	const balance = await getBalance("0.0.307141");
+	console.log(balance);
 
-	const client = Client.forTestnet();
-	client.setOperator(treasuryAccountId, treasuryPrivateKey);
-
-	// // Create token
-
-	// const transaction = await new TokenCreateTransaction()
-	// .setTokenName("Token name")
-	// .setTokenSymbol("HGC")
-	// .setTreasuryAccountId(treasuryAccountId)
-	// .setInitialSupply(5000)
-	// .setAdminKey(adminPublicKey)
-	// .freezeWith(client);
-
-	// const preTx = await transaction.sign(adminPrivateKey);
-	// const signTx = await preTx.sign(adminPrivateKey);
-	// const txResponse = await signTx.execute(client);
-
-	// console.log(txResponse)
-
-	// New acc
-
-	const newAccountPrivateKey = await PrivateKey.generate();
-	const newAccountPublicKey = newAccountPrivateKey.publicKey;
-
-	const newAccountTransactionResponse = await new AccountCreateTransaction()
-	    .setKey(newAccountPublicKey)
-	    .setInitialBalance(Hbar.fromTinybars(1000))
-	    .execute(client);
-
-	const getReceipt = await newAccountTransactionResponse.getReceipt(client);
-	const newAccountId = getReceipt.accountId;
-
-	console.log(newAccountPrivateKey.toString(), newAccountPublicKey.toString(), newAccountId.toString());
-
-	// // Balance check
-
-	// const accountBalance = await new AccountBalanceQuery()
-	//     .setAccountId(newAccountId)
-	//     .execute(client);
-
-	// console.log("The new account balance is: " + accountBalance.hbars.toTinybars() + " tinybar.");
-
-	// // Transfer
-
-	// const transferTransactionResponse = await new TransferTransaction()
-	//     .addHbarTransfer(treasuryAccountId, Hbar.fromTinybars(-1000))
-	//     .addHbarTransfer(newAccountId, Hbar.fromTinybars(1000))
-	//     .execute(client);
-
-	// const transactionReceipt = await transferTransactionResponse.getReceipt(client);
-	// console.log("The transfer transaction from my account to the new account was: " + transactionReceipt.status.toString());
-
-	// const getNewBalance = await new AccountBalanceQuery()
-	//     .setAccountId(newAccountId)
-	//     .execute(client);
-
-	// console.log("The account balance after the transfer is: " +getNewBalance.hbars.toTinybars() +" tinybar.")
+	const balance_token = await getTokenBalance("0.0.307141");
+	console.log(balance_token);
 }
-
 
 main();

@@ -1,7 +1,6 @@
 const {
-	Client, PrivateKey, TokenCreateTransaction, AccountBalanceQuery,
-	TransferTransaction, TokenAssociateTransaction, Hbar,
-	AccountCreateTransaction,
+	Client, PrivateKey, AccountCreateTransaction, TokenCreateTransaction,
+	AccountBalanceQuery, TransferTransaction, TokenAssociateTransaction, Hbar,
 } = require("@hashgraph/sdk");
 require("dotenv").config();
 
@@ -129,27 +128,4 @@ async function transfer(fromId, toId, fromKey) {
 }
 
 
-async function main() {
-	// const [accId, accKey] = await createAccount();
-	// console.log(accId, accKey);
-
-	// const token = await createToken("Token", "TOK");
-	// console.log(token);
-
-	// const balance_transfer = await transfer(treasuryAccountId, "0.0.307141", treasuryPrivateKey);
-	// console.log(balance_transfer);
-
-	// const transaction_buy = await buyToken("0.0.305536", 1, "0.0.307141", "302e020100300506032b6570042204201b00250e3e1892eba8f81ee42b401354095bc59e2017c4942b6be8daf7a76844");
-	// console.log(transaction_buy);
-
-	// const transaction_burn = await burnToken("0.0.305536", 1, "0.0.307141", "302e020100300506032b6570042204201b00250e3e1892eba8f81ee42b401354095bc59e2017c4942b6be8daf7a76844");
-	// console.log(transaction_burn);
-
-	const balance = await getBalance("0.0.307141");
-	console.log(balance);
-
-	const balance_token = await getTokenBalance("0.0.307141");
-	console.log(balance_token);
-}
-
-main();
+module.exports = { createAccount, createToken, buyToken, burnToken, getBalance, getTokenBalance, transfer };
