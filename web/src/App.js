@@ -41,7 +41,7 @@ const App = () => {
 
 		if (localStorage.getItem('userTokens')) {
 			const userTokensTemp = JSON.parse(localStorage.getItem('userTokens'));
-			setUserTokens(userTokensTemp);
+			setUserTokens(JSON.parse(userTokensTemp));
 		}
 
 		const loadUserCredentials = setInterval(() => {
@@ -85,6 +85,7 @@ const App = () => {
 							console.log('!createToken', token);
 
 							eventData.token = token;
+							eventData.owner = response.accountId;
 							localStorage.setItem('eventData', JSON.stringify(eventData));
 
 							setEventData({
@@ -237,7 +238,7 @@ const App = () => {
 									<div className='event_header'>
 										<div className='event_title'>Success</div>
 										<div className='event_subtitle'>Link to buy tickets:</div>
-										<div className='event_subtitle'>{eventData.link}</div>
+										<div className='event_subtitle' style={{ wordBreak: 'breakWord' }}>{eventData.link}</div>
 									</div>
 								)}
 							</div>
