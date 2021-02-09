@@ -99,6 +99,14 @@ async function burnToken(tokenId, count, accountId, accountKey) {
 }
 
 async function getBalance(accountId) {
+	const accountBalance = await new AccountBalanceQuery()
+	.setAccountId(accountId)
+	.execute(client);
+
+	return accountBalance.hbars.toTinybars().toString();
+}
+
+async function getTokenBalance(accountId) {
 	const query = new AccountBalanceQuery().setAccountId(accountId);
 	const tokenBalance = await query.execute(client);
 	return tokenBalance.tokens.toString();
@@ -122,8 +130,8 @@ async function transfer(fromId, toId, fromKey) {
 
 
 async function main() {
-	const [accId, accKey] = await createAccount();
-	console.log(accId, accKey);
+	// const [accId, accKey] = await createAccount();
+	// console.log(accId, accKey);
 
 	// const token = await createToken("Token", "TOK");
 	// console.log(token);
@@ -137,8 +145,11 @@ async function main() {
 	// const transaction_burn = await burnToken("0.0.305536", 1, "0.0.307141", "302e020100300506032b6570042204201b00250e3e1892eba8f81ee42b401354095bc59e2017c4942b6be8daf7a76844");
 	// console.log(transaction_burn);
 
-	// const balance = await getBalance("0.0.307141");
-	// console.log(balance);
+	const balance = await getBalance("0.0.307141");
+	console.log(balance);
+
+	const balance_token = await getTokenBalance("0.0.307141");
+	console.log(balance_token);
 }
 
 main();
