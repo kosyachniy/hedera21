@@ -1,7 +1,6 @@
 const {
 	Client, PrivateKey, TokenCreateTransaction, AccountBalanceQuery,
-	TransferTransaction, TokenAssociateTransaction, TokenMintTransaction, Hbar,
-	getAccountDetails
+	TransferTransaction, TokenAssociateTransaction, Hbar,
 } = require("@hashgraph/sdk");
 require("dotenv").config();
 
@@ -61,7 +60,25 @@ async function buyToken(tokenId, count, accountId, accountKey) {
 	const signTx = await transaction.sign(adminPrivateKey);
 	const txResponse = await signTx.execute(client);
 
-	// console.log(txResponse.transactionId.toString());
+	return txResponse.transactionId.toString();
+}
+
+async function burnToken(tokenId, count, accountId, accountKey) {
+	// Transfer
+
+	try {
+		const transaction = await new TransferTransaction()
+		.addTokenTransfer(tokenId, accountId, -count)
+		.addTokenTransfer(tokenId, treasuryAccountId, count)
+		.freezeWith(client);
+
+		const signTx = await transaction.sign(PrivateKey.fromString(accountKey));
+		const txResponse = await signTx.execute(client);
+
+		return txResponse.transactionId.toString();
+	} catch {
+		return;
+	}
 }
 
 async function getBalance(accountId) {
@@ -91,10 +108,14 @@ async function main() {
 	const token = await createToken("Token", "TOK");
 	console.log(token);
 
-	const balance_transfer = await transfer(treasuryAccountId, "0.0.307141", treasuryPrivateKey);
-	console.log(balance_transfer);
+	// const balance_transfer = await transfer(treasuryAccountId, "0.0.307141", treasuryPrivateKey);
+	// console.log(balance_transfer);
 
-	await buyToken("0.0.305536", 1, "0.0.307141", "302e020100300506032b6570042204201b00250e3e1892eba8f81ee42b401354095bc59e2017c4942b6be8daf7a76844");
+	const transaction_buy = await buyToken("0.0.305536", 1, "0.0.307141", "302e020100300506032b6570042204201b00250e3e1892eba8f81ee42b401354095bc59e2017c4942b6be8daf7a76844");
+	console.log(transaction_buy);
+
+	const transaction_burn = await burnToken("0.0.305536", 1, "0.0.307141", "302e020100300506032b6570042204201b00250e3e1892eba8f81ee42b401354095bc59e2017c4942b6be8daf7a76844");
+	console.log(transaction_burn);
 
 	const balance = await getBalance("0.0.307141");
 	console.log(balance);
