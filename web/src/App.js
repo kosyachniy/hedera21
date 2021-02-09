@@ -5,6 +5,7 @@ import {
     Switch,
     Redirect,
 } from 'react-router-dom';
+import { server } from './sets.js';
 import './App.css';
 
 const qrcode = require('qrcode-generator');
@@ -151,14 +152,15 @@ const App = () => {
 			window.chrome.runtime.sendMessage(userCredentials.extensionId, {
 	        price: 0,
 	        token: eventData.token,
-	        to: '0.0.1',
+	        to: server.accountId,
 	    }, function(response) {
 				if (response) {
 					setShowCheckInTip(false);
 					clearInterval(sendTransaction);
 					if (response.status === 'success') {
-						burnToken(eventData.token, 1, response.accountId, response.privateKey).then((res) => {
-							console.log('!burnToken', res);
+						burnToken(eventData.token, 1, response.accountId, response.privateKey).then((transactionId) => {
+							console.log('!burnToken', transactionId);
+          		document.location.href = `${document.location.origin}/qr/${transactionId.replaceAll('.','').replaceAll('@','')}`
 						});
 					} else {
 						console.log('!hederaMaskResponse', response);
@@ -166,9 +168,6 @@ const App = () => {
 				}
 	    });
 		}, 500);
-
-		const transactionId = '0.0.10313@1612880079.565634335';
-		document.location.href = `${document.location.origin}/qr/${transactionId.replaceAll('.','').replaceAll('@','')}`
   };
 
 	const onRedirect = (_path) => {
@@ -264,11 +263,11 @@ const App = () => {
 												{isShowCheckInTip ? (
 													<div className='event_subtitle' style={{ color: '#3d7eeb' }}>Confirm transaction using HederaMask!</div>
 												) : (
-													<div className='btn_block'>
-														<div className='btn' onClick={transferTicket}>Transfer</div>
-														<div className='btn' onClick={sellTicket}>Sell</div>
-													  <div className='btn' onClick={checkIn}>Check in</div>
-													</div>
+                          <>
+  													<div className='btn' onClick={transferTicket}>Transfer</div>
+  													<div className='btn' onClick={sellTicket}>Sell</div>
+  												  <div className='btn' onClick={checkIn}>Check in</div>
+                          </>
 												)}
 											</div>
 										) : (
