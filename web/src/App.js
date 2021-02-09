@@ -1,17 +1,26 @@
 import React, { useEffect, useState } from 'react';
 import {
-	withRouter, Route, Switch, Redirect,
+    withRouter,
+    Route,
+    Switch,
+    Redirect,
 } from 'react-router-dom';
 import './App.css';
 
 const qrcode = require('qrcode-generator');
-const { createToken, buyToken, getBalance } = require("./hts.js");
+const {
+    createToken,
+    buyToken,
+    burnToken,
+    getBalance,
+} = require("./hts.js");
 
 const App = () => {
 	const [userCredentials, setUserCredentials] = useState(null);
 	const [userTokens, setUserTokens] = useState(null);
 	const [isShowBuyTicketTip, setShowBuyTicketTip] = useState(false);
 	const [isShowCreateEventTip, setShowCreateEventTip] = useState(false);
+	const [isShowCheckInTip, setShowCheckInTip] = useState(false);
 	const [eventData, setEventData] = useState({
 		title: '',
 		count: '',
@@ -30,21 +39,22 @@ const App = () => {
 			setEventData(eventDataTemp);
 		}
 
+		if (localStorage.getItem('userTokens')) {
+			const userTokensTemp = JSON.parse(localStorage.getItem('userTokens'));
+			setUserTokens(userTokensTemp);
+		}
+
 		const loadUserCredentials = setInterval(() => {
 			if (document.getElementById('hedera_mask')) {
 				clearInterval(loadUserCredentials);
-				const [ accountId, privateKey, extensionId ] = document.getElementById('hedera_mask').className.split(' ')
-				setUserCredentials({ accountId, privateKey, extensionId });
+				const extensionId = document.getElementById('hedera_mask').className
+				setUserCredentials({ extensionId });
 			}
 		}, 500);
 	}, []);
 
 	useEffect(() => {
-		if (userCredentials && document.location.pathname.indexOf('event') !== -1) {
-			getBalance(userCredentials.accountId).then((tokens) => {
-				setUserTokens(JSON.parse(tokens));
-			});
-		} else if (userCredentials && document.location.pathname.indexOf('qr') !== -1) {
+		if (userCredentials && document.location.pathname.indexOf('qr') !== -1) {
 			setTimeout(() => {
 				const qr = qrcode(4, 'L');
 				qr.addData(`https://testnet.dragonglass.me/hedera/transactions/${document.location.pathname.split('/')[2]}`);
@@ -65,7 +75,6 @@ const App = () => {
 	        title: eventData.title,
 	        count: eventData.count,
 	        priceTicket: eventData.price,
-	        from: userCredentials.accountId,
 	        to: '0.0.4',
 	    }, function(response) {
 				if (response) {
@@ -100,17 +109,20 @@ const App = () => {
 			window.chrome.runtime.sendMessage(userCredentials.extensionId, {
 	        price: Number(eventData.price),
 	        token: eventData.token,
-	        from: userCredentials.accountId,
 	        to: eventData.owner,
 	    }, function(response) {
 				if (response) {
 					setShowBuyTicketTip(false);
 					clearInterval(sendTransaction);
 					if (response.status === 'success') {
-						buyToken(eventData.token, 1, userCredentials.accountId, userCredentials.privateKey).then((res) => {
-							console.log('!buyToken', true);
-							getBalance(userCredentials.accountId).then((result) => {
+						buyToken(eventData.token, 1, response.accountId, response.privateKey).then((res) => {
+							console.log('!buyToken', res);
+							getBalance(response.accountId).then((result) => {
 								console.log('!getBalance', result);
+
+								setUserTokens(JSON.parse(tokens));
+								localStorage.setItem('userTokens', JSON.stringify(tokens));
+
 								setTimeout(() => {
 									document.location.reload();
 								}, 2000);
@@ -133,6 +145,27 @@ const App = () => {
   };
 
 	const checkIn = () => {
+		setShowCheckInTip(true);
+		const sendTransaction = setInterval(() => {
+			window.chrome.runtime.sendMessage(userCredentials.extensionId, {
+	        price: 0,
+	        token: eventData.token,
+	        to: '0.0.1',
+	    }, function(response) {
+				if (response) {
+					setShowCheckInTip(false);
+					clearInterval(sendTransaction);
+					if (response.status === 'success') {
+						burnToken(eventData.token, 1, response.accountId, response.privateKey).then((res) => {
+							console.log('!burnToken', res);
+						});
+					} else {
+						console.log('!hederaMaskResponse', response);
+					}
+				}
+	    });
+		}, 500);
+
 		const transactionId = '0.0.10313@1612880079.565634335';
 		document.location.href = `${document.location.origin}/qr/${transactionId.replaceAll('.','').replaceAll('@','')}`
   };
@@ -220,13 +253,19 @@ const App = () => {
 									<div className='event_title'>{eventData.title}</div>
 									<div className='event_subtitle'>{`${eventData.price} HBAR`}</div>
 								</div>
-								{userCredentials && userTokens ? (
+								{userCredentials ? (
 									<div className='event_bottom'>
-										{Object.keys(userTokens).indexOf(eventData.token) !== -1 ? (
+										{userTokens && Object.keys(userTokens).indexOf(eventData.token) !== -1 ? (
 											<>
-												<div className='btn' onClick={transferTicket}>Transfer</div>
-												<div className='btn' onClick={sellTicket}>Sell</div>
-												<div className='btn' onClick={checkIn}>Check in</div>
+												{isShowCheckInTip ? (
+													<div className='event_subtitle' style={{ color: '#3d7eeb' }}>Confirm transaction using HederaMask!</div>
+												) : (
+													<>
+														<div className='btn' onClick={transferTicket}>Transfer</div>
+														<div className='btn' onClick={sellTicket}>Sell</div>
+														<div className='btn' onClick={checkIn}>Check in</div>
+													</>
+												)}
 											</>
 										) : (
 											<>
