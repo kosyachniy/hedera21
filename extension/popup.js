@@ -83,11 +83,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         if (request.price) {
-            document.getElementById("popup_submit_price").innerHTML = `Total: ${request.price} HBAR`;
-        }
-
-        if (request.total) {
-            document.getElementById("popup_submit_total").innerHTML = `Total: ${request.total} HBAR`;
+            document.getElementById("popup_submit_price").innerHTML = `Price: ${request.price} HBAR`;
         }
 
         if (request.token) {
@@ -103,14 +99,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 privateKey: JSON.parse(localStorage.getItem('account')).privateKey,
             });
 
-            let total = 0;
-            if (document.getElementById("popup_submit_total").innerHTML !== '') {
-                total = Number(document.getElementById("popup_submit_total").innerHTML.split(' ')[0]);
+            let price = 0;
+            if (document.getElementById("popup_submit_price").innerHTML !== '') {
+                price = Number(document.getElementById("popup_submit_price").innerHTML.split(' ')[0]);
             }
             localStorage.setItem('account', JSON.stringify({
                 'accountId': JSON.parse(localStorage.getItem('account')).accountId,
                 'privateKey': JSON.parse(localStorage.getItem('account')).privateKey,
-                'balance': Number(JSON.parse(localStorage.getItem('account')).balance) - total,
+                'balance': Number(JSON.parse(localStorage.getItem('account')).balance) - price,
             }));
             onLoad();
         };
