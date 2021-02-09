@@ -29,16 +29,13 @@ document.addEventListener('DOMContentLoaded', function() {
     function onAuth() {
         onPopup('popup_phrase');
         document.getElementById("popup_phrase_btn").onclick = onCheck;
-        document.getElementById("popup_sample_visitor").onclick = onInsertVisitor;
-        document.getElementById("popup_sample_organiser").onclick = onInsertOrganiser;
-    }
+        document.getElementById("popup_sample_visitor").onclick = function() {
+            document.getElementById("pass_phrase").value = 'microwave school bird horse dictionary frog coast mouse summer place comb battery';
+        };
+        document.getElementById("popup_sample_organiser").onclick = function() {
+            document.getElementById("pass_phrase").value = 'apple flower squirrel goose crossroads duc cheese market cow kettle fox monkey';
+        }
 
-    function onInsertOrganiser() {
-        document.getElementById("pass_phrase").value = 'microwave school bird horse dictionary frog coast mouse summer place comb battery';
-    }
-
-    function onInsertVisitor() {
-        document.getElementById("pass_phrase").value = 'apple flower squirrel goose crossroads duc cheese market cow kettle fox monkey';
     }
 
     function onCheck() {
@@ -74,36 +71,53 @@ document.addEventListener('DOMContentLoaded', function() {
 
     chrome.runtime.onMessageExternal.addListener(function(request, sender, sendResponse) {
         onPopup('popup_submit');
-        document.getElementById("popup_submit_total").innerHTML = `${price_hbar} HBAR`;
-        document.getElementById("popup_submit_confirm_btn").onclick = handlePayBtn;
-        document.getElementById("popup_submit_token").innerHTML = request.token;
-        document.getElementById("popup_submit_from").innerHTML = request.from;
-        document.getElementById("popup_submit_to").innerHTML = request.to;
-        document.getElementById("popup_submit_reject_btn").onclick = onLoad;
 
-        sendResponse({
-            status: 'success',
-        });
+        if (request.title) {
+            document.getElementById("popup_submit_title").innerHTML = `Title: ${request.title}`;
+        }
+        if (request.count) {
+            document.getElementById("popup_submit_count").innerHTML = `Number of tickets: ${request.count}`;
+        }
+        if (request.priceTicket) {
+            document.getElementById("popup_submit_priceTicket").innerHTML = `Ticket price: ${request.priceTicket}`;
+        }
+
+        if (request.price) {
+            document.getElementById("popup_submit_price").innerHTML = `Total: ${request.price} HBAR`;
+        }
+
+        if (request.total) {
+            document.getElementById("popup_submit_total").innerHTML = `Total: ${request.total} HBAR`;
+        }
+
+        if (request.token) {
+            document.getElementById("popup_submit_token").innerHTML = `Token: ${request.token}`;
+        }
+
+        document.getElementById("popup_submit_from").innerHTML = `From: ${request.from}`;
+        document.getElementById("popup_submit_to").innerHTML = `To: ${request.to}`;
+        document.getElementById("popup_submit_confirm_btn").onclick = function(sendResponse) {
+            sendResponse({
+                status: 'success',
+            });
+
+            let total = 0;
+            if (document.getElementById("popup_submit_total").innerHTML !== '') {
+                total = Number(document.getElementById("popup_submit_total").innerHTML.split(' ')[0]);
+            }
+            localStorage.setItem('account', JSON.stringify({
+                'accountId': JSON.parse(localStorage.getItem('account')).accountId,
+                'privateKey': JSON.parse(localStorage.getItem('account')).privateKey,
+                'balance': Number(JSON.parse(localStorage.getItem('account')).balance) - total,
+            }));
+            onLoad();
+        };
+        document.getElementById("popup_submit_reject_btn").onclick = function(sendResponse) {
+            sendResponse({
+                status: 'failure',
+            });
+            onLoad();
+        };
     });
-
-    function handlePayBtn() {
-        const total = Number(document.getElementById("popup_submit_total").innerHTML.split(' ')[0]);
-        localStorage.setItem('account', JSON.stringify({
-            'accountId': JSON.parse(localStorage.getItem('account')).accountId,
-            'privateKey': JSON.parse(localStorage.getItem('account')).privateKey,
-            'balance': Number(JSON.parse(localStorage.getItem('account')).balance) - total,
-        }));
-        onLoad();
-    }
-
-    // Example from web page
-    // window.chrome.runtime.sendMessage('cpppdpikicgejffngepnhkoimoefnnke', {
-    //     price: 100,
-    //     token: 'MDK',
-    //     from: '0.0.10143',
-    //     to: '0.0.10089',
-    // }, function(response) {
-    //     console.log(response);
-    // });
 
 }, false);
