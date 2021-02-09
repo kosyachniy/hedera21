@@ -12,12 +12,21 @@
 <body>
     <div class="popup_title">HederaMask</div>
     <div id="popup_auth">
-        <button class="popup-btn" id="popup_auth_btn">Enter to account</button>
-        <a class="popup-btn" href="https://portal.hedera.com/register" target="_blank">Create account</a>
+        <button class="popup-btn" id="popup_auth_btn">Log in to your Hedera Profile</button>
+        <a class="popup-btn-link" href="https://portal.hedera.com/register" target="_blank">Create your Hedera Account</a>
+    </div>
+    <div id="popup_phrase">
+        <textarea type="text" placeholder="Pass phrase" id="pass_phrase"></textarea>
+        <div class="group_samples">
+            <div class="popup_sample" id="popup_sample_organiser">Sample organiser</div>
+            <div class="popup_sample" id="popup_sample_visitor">Sample visitor</div>
+        </div>
+        <div class="popup_subtitle" id="popup_sample_error"></div>
+        <button class="popup-btn" id="popup_phrase_btn">Enter</button>
     </div>
     <div id="popup_account">
         <div class="popup_subtitle">
-            <span>Id:</span>
+            <span>Account id:</span>
             <span id="popup_id"></span>
         </div>
         <div class="popup_subtitle">
@@ -25,14 +34,6 @@
             <span id="popup_balance"></span>
         </div>
         <button class="popup-btn" id="popup_account_btn">Exit</button>
-    </div>
-    <!-- <div id="popup_phrase">
-        <div id="popup_phrase_list"></div>
-        <button class="popup-btn" id="popup_phrase_btn">I remember</button>
-    </div> -->
-    <div id="popup_login">
-        <input type="text" placeholder="Your phrase"></input>
-        <button class="popup-btn" id="popup_login_btn">Enter</button>
     </div>
     <div id="popup_submit">
         <div class="popup_subtitle">
@@ -46,10 +47,6 @@
         <div class="popup_subtitle">
             <span>To:</span>
             <span id="popup_submit_to"></span>
-        </div>
-        <div class="popup_subtitle">
-            <span>Current price HBAR:</span>
-            <span id="popup_submit_hbar"></span>
         </div>
         <div class="popup_subtitle">
             <span>Total:</span>

@@ -1,69 +1,85 @@
 // логика на попапе
 document.addEventListener('DOMContentLoaded', function() {
 
-    window.onload = init;
+    window.onload = onInit;
 
-    function init() {
-        document.getElementById("popup_auth_btn").onclick = handleAuthBtn;
+    function onInit() {
+        if (localStorage.getItem('account')) {
+            onLoad();
+        } else {
+            onExit();
+        }
     }
 
-    if (localStorage.getItem('account')) {
-        handleLoadBtn();
-    } else {
-        handleAccountBtn();
-    }
-
-    function onPopup(_popup) {
+    function onPopup(popup) {
         document.getElementById("popup_auth").style.display = 'none';
-        document.getElementById("popup_submit").style.display = 'none';
+        document.getElementById("popup_phrase").style.display = 'none';
         document.getElementById("popup_account").style.display = 'none';
-        document.getElementById("popup_login").style.display = 'none';
+        document.getElementById("popup_submit").style.display = 'none';
 
-        document.getElementById(_popup).style.display = 'flex';
+        document.getElementById(popup).style.display = 'flex';
     }
 
-    function handleAuthBtn() {
-        onPopup('popup_login');
-        document.getElementById("popup_login_btn").onclick = handleLoadBtn;
-        localStorage.setItem('account', JSON.stringify({
-            'accountId': '0.0.307141',
-            'privateKey': '302e020100300506032b6570042204201b00250e3e1892eba8f81ee42b401354095bc59e2017c4942b6be8daf7a76844',
-            'balance': 9420,
-        }));
+    function onExit() {
+        onPopup('popup_auth');
+        document.getElementById("popup_auth_btn").onclick = onAuth;
+        localStorage.removeItem('account');
     }
 
-    function handleLoadBtn() {
+    function onAuth() {
+        onPopup('popup_phrase');
+        document.getElementById("popup_phrase_btn").onclick = onCheck;
+        document.getElementById("popup_sample_visitor").onclick = onInsertVisitor;
+        document.getElementById("popup_sample_organiser").onclick = onInsertOrganiser;
+    }
+
+    function onInsertOrganiser() {
+        document.getElementById("pass_phrase").value = 'microwave school bird horse dictionary frog coast mouse summer place comb battery';
+    }
+
+    function onInsertVisitor() {
+        document.getElementById("pass_phrase").value = 'apple flower squirrel goose crossroads duc cheese market cow kettle fox monkey';
+    }
+
+    function onCheck() {
+        const phrase = document.getElementById("pass_phrase").value;
+        if (phrase === 'microwave school bird horse dictionary frog coast mouse summer place comb battery') {
+            localStorage.setItem('account', JSON.stringify({
+                'accountId': '0.0.310391',
+                'publicKey': '302a300506032b6570032100dd76522385af5da95872eab455df7473bc904a0d5a5d81642c462e36ffafc1ac',
+                'privateKey': '302e020100300506032b6570042204200a9b61eec3886381675735cb940b7850d1ef0aa373105a637f185c87e0d1a36b',
+                'balance': 9420,
+            }));
+            document.getElementById("pass_phrase").value = '';
+            onLoad();
+        } else if (phrase === 'apple flower squirrel goose crossroads duc cheese market cow kettle fox monkey') {
+            localStorage.setItem('account', JSON.stringify({
+                'accountId': '0.0.307141',
+                'privateKey': '302e020100300506032b6570042204201b00250e3e1892eba8f81ee42b401354095bc59e2017c4942b6be8daf7a76844',
+                'balance': 1840,
+            }));
+            document.getElementById("pass_phrase").value = '';
+            onLoad();
+        } else {
+            document.getElementById("popup_sample_error").innerHTML = 'No valid phrase'
+        }
+    }
+
+    function onLoad() {
         onPopup('popup_account');
         document.getElementById("popup_id").innerHTML = JSON.parse(localStorage.getItem('account')).accountId;
         document.getElementById("popup_balance").innerHTML = `${JSON.parse(localStorage.getItem('account')).balance} HBAR`;
-        document.getElementById("popup_account_btn").onclick = handleAccountBtn;
-    }
-
-    function handleAccountBtn() {
-        onPopup('popup_auth');
-        localStorage.removeItem('account');
+        document.getElementById("popup_account_btn").onclick = onExit;
     }
 
     chrome.runtime.onMessageExternal.addListener(function(request, sender, sendResponse) {
         onPopup('popup_submit');
-
-        var url = "https://api.binance.com/api/v3/ticker/price?symbol=HBARUSDT";
-        var xhr = new XMLHttpRequest();
-        xhr.open("GET", url);
-        xhr.onreadystatechange = function() {
-            if (xhr.readyState === 4) {
-                const price_hbar = JSON.parse(xhr.responseText).price.substr(0, 7);
-                document.getElementById("popup_submit_hbar").innerHTML = price_hbar;
-                document.getElementById("popup_submit_total").innerHTML = `${Math.floor((request.price / price_hbar) * 1000) / 1000} USD`;
-                document.getElementById("popup_submit_confirm_btn").onclick = handlePayBtn;
-            }
-        };
-        xhr.send();
-
+        document.getElementById("popup_submit_total").innerHTML = `${price_hbar} HBAR`;
+        document.getElementById("popup_submit_confirm_btn").onclick = handlePayBtn;
         document.getElementById("popup_submit_token").innerHTML = request.token;
         document.getElementById("popup_submit_from").innerHTML = request.from;
         document.getElementById("popup_submit_to").innerHTML = request.to;
-        document.getElementById("popup_submit_reject_btn").onclick = handleLoadBtn;
+        document.getElementById("popup_submit_reject_btn").onclick = onLoad;
 
         sendResponse({
             status: 'success',
@@ -77,7 +93,7 @@ document.addEventListener('DOMContentLoaded', function() {
             'privateKey': JSON.parse(localStorage.getItem('account')).privateKey,
             'balance': Number(JSON.parse(localStorage.getItem('account')).balance) - total,
         }));
-        handleLoadBtn();
+        onLoad();
     }
 
     // Example from web page
