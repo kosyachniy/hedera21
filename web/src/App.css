@@ -52,6 +52,13 @@ body {
     opacity: 0.8;
 }
 
+.btn_blocks {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
 .events_list {
     display: flex;
     align-items: center;

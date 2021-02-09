@@ -264,13 +264,15 @@ const App = () => {
 												{isShowCheckInTip ? (
 													<div className='event_subtitle' style={{ color: '#3d7eeb' }}>Confirm transaction using HederaMask!</div>
 												) : (
-													<>
-														<div className='btn' onClick={transferTicket}>Transfer</div>
-														<div className='btn' onClick={sellTicket}>Sell</div>
+													<div className='btn_blocks'>
+                            <div className='btn_block'>
+  														<div className='btn' onClick={transferTicket}>Transfer</div>
+  														<div className='btn' onClick={sellTicket}>Sell</div>
+                            </div>
                             <div className='btn_block'>
 														  <div className='btn' onClick={checkIn}>Check in</div>
                             </div>
-													</>
+													</div>
 												)}
 											</div>
 										) : (
