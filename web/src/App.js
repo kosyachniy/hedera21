@@ -315,7 +315,9 @@ const App = () => {
 								</div>
 								<div className='event_bottom'>
 									<div id="qr-code" />
-                  <div className='subtitle'>{`https://testnet.dragonglass.me/hedera/transactions/${document.location.pathname.split('/')[2]}`}</div>
+                  <div className='subtitle' style={{ wordBreak: 'break-word', margin: 10 }}>
+                    {`https://testnet.dragonglass.me/hedera/transactions/${document.location.pathname.split('/')[2]}`}
+                  </div>
 								</div>
 							</div>
 						</div>
