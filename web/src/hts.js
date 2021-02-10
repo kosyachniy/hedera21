@@ -1,17 +1,19 @@
 import {
     server
 } from './sets.js';
+
 const {
     Client,
     PrivateKey,
+    AccountCreateTransaction,
     TokenCreateTransaction,
     AccountBalanceQuery,
     TransferTransaction,
     TokenAssociateTransaction,
     Hbar,
+    TokenInfoQuery,
 } = require("@hashgraph/sdk");
 require("dotenv").config();
-
 
 const treasuryAccountId = server.accountId;
 const treasuryPrivateKey = server.privateKey;
@@ -22,6 +24,21 @@ const adminPublicKey = adminPrivateKey.publicKey;
 const client = Client.forTestnet();
 client.setOperator(treasuryAccountId, treasuryPrivateKey);
 
+
+export async function createAccount() {
+    const newAccountPrivateKey = await PrivateKey.generate();
+    const newAccountPublicKey = newAccountPrivateKey.publicKey;
+
+    const txResponse = await new AccountCreateTransaction()
+        .setKey(newAccountPublicKey)
+        .setInitialBalance(Hbar.fromTinybars(1000))
+        .execute(client);
+
+    const txReceipt = await txResponse.getReceipt(client);
+    const newAccountId = txReceipt.accountId;
+
+    return [newAccountId.toString(), newAccountPrivateKey.toString()];
+}
 
 export async function createToken(name, symbol) {
     const transaction = await new TokenCreateTransaction()
@@ -35,8 +52,9 @@ export async function createToken(name, symbol) {
     const preTx = await transaction.sign(adminPrivateKey);
     const signTx = await preTx.sign(adminPrivateKey);
     const txResponse = await signTx.execute(client);
-    const txReceipt = await txResponse.getReceipt(client);
+    // console.log(txResponse.transactionId.toString());
 
+    const txReceipt = await txResponse.getReceipt(client);
     return txReceipt.tokenId.toString();
 }
 
@@ -90,12 +108,20 @@ export async function burnToken(tokenId, count, accountId, accountKey) {
 }
 
 export async function getBalance(accountId) {
+    const accountBalance = await new AccountBalanceQuery()
+        .setAccountId(accountId)
+        .execute(client);
+
+    return accountBalance.hbars.toTinybars().toString();
+}
+
+export async function getTokenBalance(accountId) {
     const query = new AccountBalanceQuery().setAccountId(accountId);
     const tokenBalance = await query.execute(client);
     return tokenBalance.tokens.toString();
 }
 
-async function transfer(fromId, toId, fromKey) {
+export async function transfer(fromId, toId, fromKey) {
     const transferTransactionResponse = await new TransferTransaction()
         .addHbarTransfer(fromId, Hbar.fromTinybars(-5000))
         .addHbarTransfer(toId, Hbar.fromTinybars(5000))
@@ -109,4 +135,19 @@ async function transfer(fromId, toId, fromKey) {
         .execute(client);
 
     return getNewBalance.hbars.toTinybars().toString();
+}
+
+export async function getToken(tokenId) {
+    const info = await new TokenInfoQuery()
+        .setTokenId(tokenId)
+        .execute(client);
+
+    const res = {
+        name: info.name,
+        symbol: info.symbol,
+        count: info.totalSupply.toString(),
+        expiry: info.expiry,
+    }
+
+    return res;
 }
