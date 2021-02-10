@@ -5,6 +5,7 @@ import {
     Switch,
     Redirect,
 } from 'react-router-dom';
+import { server } from './sets.js';
 import './App.css';
 
 const qrcode = require('qrcode-generator');
@@ -128,10 +129,6 @@ const App = () => {
 
   								setUserTokens(JSON.parse(result));
   								localStorage.setItem('userTokens', JSON.stringify(result));
-
-  								setTimeout(() => {
-  									document.location.reload();
-  								}, 2000);
   							});
               }, 2000);
 						});
@@ -157,7 +154,7 @@ const App = () => {
 		const sendTransaction = setInterval(() => {
 			window.chrome.runtime.sendMessage(userCredentials.extensionId, {
 	        price: 0,
-	        to: process.env.ACCOUNT_ID,
+	        to: server.accountId,
 	    }, function(response) {
 				if (response) {
 					clearInterval(sendTransaction);
