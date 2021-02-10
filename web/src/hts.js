@@ -138,16 +138,21 @@ export async function transfer(fromId, toId, fromKey) {
 }
 
 export async function getToken(tokenId) {
-    const info = await new TokenInfoQuery()
-        .setTokenId(tokenId)
-        .execute(client);
+    try {
+      const info = await new TokenInfoQuery()
+          .setTokenId(tokenId)
+          .execute(client);
 
-    const res = {
-        name: info.name,
-        symbol: info.symbol,
-        count: info.totalSupply.toString(),
-        expiry: info.expiry,
+      const res = {
+          name: info.name,
+          symbol: info.symbol,
+          count: info.totalSupply.toString(),
+          expiry: info.expiry,
+      }
+
+      return res;
+    } catch {
+      return null;
     }
 
-    return res;
 }
