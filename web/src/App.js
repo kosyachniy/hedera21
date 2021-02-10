@@ -121,7 +121,7 @@ const App = () => {
 					clearInterval(sendTransaction);
 					if (response.status === 'success') {
 						buyToken(tokenInfo.token, 1, response.accountId, response.privateKey).then((res) => {
-							console.log('!buyToken', res);
+							console.log('!buyToken', `https://testnet.dragonglass.me/hedera/transactions/${res.replaceAll('.','').replaceAll('@','')}`);
               setTimeout(() => {
                 getTokenBalance(response.accountId).then((result) => {
         					setShowBuyTicketTip(false);
@@ -205,25 +205,25 @@ const App = () => {
 										<div className='event_header'>
 											<div className='event_title'>New event</div>
 												<div className='event_form'>
+                          <div className='subtitle'>Title</div>
 													<input
 														type="text"
 														value={eventData.title}
 														onChange={(e) => setInput(e, 'title')}
-														placeholder="Title"
                             required
 													/>
+                          <div className='subtitle'>Number of tickets</div>
 													<input
 														type="number"
 														value={eventData.count}
 														onChange={(e) => setInput(e, 'count')}
-														placeholder="Number of tickets"
                             required
 													/>
+                          <div className='subtitle'>Ticket price (HBAR)</div>
 													<input
 														type="number"
 														value={eventData.price}
 														onChange={(e) => setInput(e, 'price')}
-														placeholder="Ticket price (HBAR)"
                             required
 													/>
 												</div>
@@ -315,6 +315,7 @@ const App = () => {
 								</div>
 								<div className='event_bottom'>
 									<div id="qr-code" />
+                  <div className='subtitle'>{`https://testnet.dragonglass.me/hedera/transactions/${document.location.pathname.split('/')[2]}`}</div>
 								</div>
 							</div>
 						</div>
