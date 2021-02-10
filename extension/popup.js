@@ -70,52 +70,59 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     chrome.runtime.onMessageExternal.addListener(function(request, sender, sendResponse) {
-        onPopup('popup_submit');
+        if (localStorage.getItem('account')) {
+            onPopup('popup_submit');
 
-        if (request.title) {
-            document.getElementById("popup_submit_title").innerHTML = `Title: ${request.title}`;
-        }
-        if (request.count) {
-            document.getElementById("popup_submit_count").innerHTML = `Number of tickets: ${request.count}`;
-        }
-        if (request.priceTicket) {
-            document.getElementById("popup_submit_priceTicket").innerHTML = `Ticket price: ${request.priceTicket}`;
-        }
-
-        if (request.price) {
-            document.getElementById("popup_submit_price").innerHTML = `Price: ${request.price} HBAR`;
-        }
-
-        if (request.token) {
-            document.getElementById("popup_submit_token").innerHTML = `Token: ${request.token}`;
-        }
-
-        document.getElementById("popup_submit_from").innerHTML = `From: ${JSON.parse(localStorage.getItem('account')).accountId}`;
-        document.getElementById("popup_submit_to").innerHTML = `To: ${request.to}`;
-        document.getElementById("popup_submit_confirm_btn").onclick = (e, sendResponseFunc = sendResponse) => {
-            sendResponseFunc({
-                status: 'success',
-                accountId: JSON.parse(localStorage.getItem('account')).accountId,
-                privateKey: JSON.parse(localStorage.getItem('account')).privateKey,
-            });
-
-            let price = 0;
-            if (document.getElementById("popup_submit_price").innerHTML !== '') {
-                price = Number(document.getElementById("popup_submit_price").innerHTML.split(' ')[0]);
+            if (request.title) {
+                document.getElementById("popup_submit_title").innerHTML = `Title: ${request.title}`;
             }
-            localStorage.setItem('account', JSON.stringify({
-                'accountId': JSON.parse(localStorage.getItem('account')).accountId,
-                'privateKey': JSON.parse(localStorage.getItem('account')).privateKey,
-                'balance': (Number(JSON.parse(localStorage.getItem('account')).balance) - price).toFixed(2),
-            }));
-            onLoad();
-        };
-        document.getElementById("popup_submit_reject_btn").onclick = (e, sendResponseFunc = sendResponse) => {
-            sendResponseFunc({
-                status: 'failure',
+            if (request.count) {
+                document.getElementById("popup_submit_count").innerHTML = `Number of tickets: ${request.count}`;
+            }
+            if (request.priceTicket) {
+                document.getElementById("popup_submit_priceTicket").innerHTML = `Ticket price: ${request.priceTicket}`;
+            }
+
+            if (request.price) {
+                document.getElementById("popup_submit_price").innerHTML = `Price: ${request.price} HBAR`;
+            }
+
+            if (request.token) {
+                document.getElementById("popup_submit_token").innerHTML = `Token: ${request.token}`;
+            }
+
+            document.getElementById("popup_submit_from").innerHTML = `From: ${JSON.parse(localStorage.getItem('account')).accountId}`;
+            document.getElementById("popup_submit_to").innerHTML = `To: ${request.to}`;
+            document.getElementById("popup_submit_confirm_btn").onclick = (e, sendResponseFunc = sendResponse) => {
+                sendResponseFunc({
+                    status: 'success',
+                    accountId: JSON.parse(localStorage.getItem('account')).accountId,
+                    privateKey: JSON.parse(localStorage.getItem('account')).privateKey,
+                });
+
+                let price = 0;
+                if (document.getElementById("popup_submit_price").innerHTML !== '') {
+                    price = Number(document.getElementById("popup_submit_price").innerHTML.split(' ')[0]);
+                }
+                localStorage.setItem('account', JSON.stringify({
+                    'accountId': JSON.parse(localStorage.getItem('account')).accountId,
+                    'privateKey': JSON.parse(localStorage.getItem('account')).privateKey,
+                    'balance': (Number(JSON.parse(localStorage.getItem('account')).balance) - price).toFixed(2),
+                }));
+                onLoad();
+            };
+            document.getElementById("popup_submit_reject_btn").onclick = (e, sendResponseFunc = sendResponse) => {
+                sendResponseFunc({
+                    status: 'failure',
+                });
+                onLoad();
+            };
+        } else {
+            sendResponse({
+                status: '!Authorization error',
             });
-            onLoad();
-        };
+            onExit();
+        }
     });
 
 }, false);

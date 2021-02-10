@@ -98,7 +98,7 @@ const App = () => {
 								title: '',
 								count: '',
 								price: '',
-								link: `${document.location.origin}/event/${eventData.token}?hash=${Number(eventData.price).toString(16)}`,
+								link: `${document.location.origin}/event/${token}?hash=${Number(eventData.price).toString(16)}`,
 							});
 						});
 					} else {
@@ -252,7 +252,7 @@ const App = () => {
 									<div className='event_header'>
 										<div className='event_title'>Success</div>
 										<div className='event_subtitle'>Link to buy tickets:</div>
-										<div className='event_subtitle' style={{ wordBreak: 'breakWord' }}>{eventData.link}</div>
+										<div className='event_subtitle' style={{ wordBreak: 'break-word' }}>{eventData.link}</div>
 									</div>
 								)}
 							</div>
