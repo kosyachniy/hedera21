@@ -106,7 +106,7 @@ document.addEventListener('DOMContentLoaded', function() {
             localStorage.setItem('account', JSON.stringify({
                 'accountId': JSON.parse(localStorage.getItem('account')).accountId,
                 'privateKey': JSON.parse(localStorage.getItem('account')).privateKey,
-                'balance': Number(JSON.parse(localStorage.getItem('account')).balance) - price,
+                'balance': (Number(JSON.parse(localStorage.getItem('account')).balance) - price).toFixed(2),
             }));
             onLoad();
         };
