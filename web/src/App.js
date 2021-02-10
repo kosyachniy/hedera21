@@ -260,7 +260,7 @@ const App = () => {
 					</Route>
 					<Route path="/event/:linkId">
 						<div className='title'>Hedera Smart Tickets</div>
-						{tokenInfo && Object.keys(userTokens).indexOf(tokenInfo.token) !== -1 ? (
+						{tokenInfo && userTokens && Object.keys(userTokens).indexOf(tokenInfo.token) !== -1 ? (
 							<div className='subtitle'>Your ticket</div>
 						) : (
 							<div className='subtitle'>Buy ticket</div>
