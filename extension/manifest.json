@@ -35,14 +35,5 @@
 
   "permissions": [
     "activeTab"
-  ],
-
-  "commands": {
-    "toggle-feature-foo": {
-      "suggested_key": {
-        "mac": "Command+Shift+Y"
-      },
-      "description": "Opens popup.html"
-    }
-  }
+  ]
 }
